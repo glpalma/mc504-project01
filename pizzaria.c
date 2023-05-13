@@ -24,6 +24,9 @@ typedef enum { PARADO, REABASTECENDO_GAS, ASSANDO } estado_forno;
 estado_forno e_forno[N_FORNOS];
 int qtd_gas_fornos[N_FORNOS];
 
+typedef enum { MONTANDO_PIZZA, LEVANDO_PIZZA_FORNO, ESPERANDO_FORNO, ENTREGANDO_PIZZA } estado_pizzaiolo;
+estado_pizzaiolo e_pizzaiolo[N_PIZZAIOLOS];
+
 sem_t sem_estados;
 
 /**
@@ -69,20 +72,73 @@ void* f_forno(void* id_forno) {
 }
 
 /**
+ * @brief Devolve um sabor de pizza aleatório do menu.
+ *
+ * @return sabor de pizza representado por um char
+ */
+char gerar_sabor_pizza() {
+    const int n_itens_menu = 3;
+    char menu[n_itens_menu] = { 'Q', 'P', 'C' };
+
+    int selecionado = random() % n_itens_menu;
+
+    return menu[selecionado];
+}
+
+/**
  * @brief Representa as ações de um pizzaiolo.
  *
  * @param id_pizzaiolo
  * @return void*
  */
-void* f_pizzaiolo(void* id_pizzaiolo) { // TODO: implementar
-    int id_pizzaiolo = *(int*)id_pizzaiolo;
+void* f_pizzaiolo(void* id_pizzaiolo) {
+    int id = *(int*)id_pizzaiolo;
+    char sabor_pizza;
+    int meu_forno;
 
-    // é assumido que os pizzaiolos sempre estão trabalhando
+    // os pizzaiolos sempre estão trabalhando
     while (1) {
+        // estados do pizzaiolo: montando_pizza, levando_ao_forno, esperando_forno, entregando 
 
+        // pizzaiolo pega um pedido aleatório (fazer gerador de pedidos?)
+        // demora um tempo montando a pizza (sleep)
+        // verifica qual forno utilizar (acessa o indicador)
+        // vai até o forno (somente na animação) (estado de "andando?")
+        // espera até a pizza ficar pronta
+        // -- precisa existir uma comunicação entre o forno e o pizzaiolo
+        // -- para indicar que a pizza ficou pronta
+        // pizzaiolo retira do forno e manda servir
+        // recomeça
+
+        sabor_pizza = gerar_sabor_pizza();
+        sem_wait(&sem_estados);
+        e_pizzaiolo[id] = MONTANDO_PIZZA;
+        sem_post(&sem_estados);
+        sleep(1);
+
+        sem_post(&sem_le_indicador);
+        meu_forno = indicador;
+        sem_wait(&sem_escreve_indicador);
+        
+        sem_wait(&sem_estados);
+        e_pizzaiolo[id] = LEVANDO_PIZZA_FORNO;
+        sem_post(&sem_estados);
+        // como representar o movimento do pizzaiolo até o forno?
+
+        // -> semaforo para indicar ao forno a presença de pizza
+
+        sem_wait(&sem_estados);
+        e_pizzaiolo[id] = ESPERANDO_FORNO;
+        sem_post(&sem_estados);
+
+        // -> forno indica ao pizzaiolo que a pizza está pronta
+
+        sem_wait(&sem_estados);
+        e_pizzaiolo[id] = ENTREGANDO_PIZZA;
+        sem_post(&sem_estados);
+
+        // como representar o a entrega da pizza ao garçom?
     }
-
-
 }
 
 int main() {

@@ -94,6 +94,11 @@ int main() {
 
     for (i = 0; i < N_FORNOS; i++) {
         qtd_gas_fornos[N_FORNOS] = GAS_INICIAL;
+
+        sem_wait(&sem_estados);
+        e_forno[i] = PARADO;
+        sem_post(&sem_estados);
+
     }
 
     for (i = 0; i < N_FORNOS; i++) {

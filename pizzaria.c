@@ -18,7 +18,7 @@ reabastecimento.
 #define GAS_INICIAL 8 // quantidade máxima de gás
 
 sem_t sem_escreve_indicador, sem_le_indicador;
-int indicador; // indica aos pizzaiolos qual forno utilizar
+int indicador; // Indica aos pizzaiolos qual forno utilizar
 
 typedef enum { PARADO, REABASTECENDO_GAS, ASSANDO } estado_forno;
 estado_forno e_forno[N_FORNOS];
@@ -34,10 +34,14 @@ sem_t sem_estados;
  */
 void* f_forno(void* id_forno) {
     int id = *(int*)id_forno;
+    sem_wait(&sem_estados);
+    estado_forno estado_atual = e_forno[id];
+    sem_post(&sem_estados);
 
     // forno demora a reabastecer
-    if (qtd_gas_fornos[id] < GAS_INICIAL) {
+    if (estado_atual == REABASTECENDO_GAS && qtd_gas_fornos[id] < GAS_INICIAL) {
         qtd_gas_fornos[id] += 1;
+        sleep(1);
         return;
     }
 

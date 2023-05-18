@@ -16,9 +16,9 @@ periodicamente os fornos para reabastecê-los caso
 necessário.
 */
 
-#define N_PIZZAIOLOS 9
-#define N_REPOSITORES 3
-#define N_FORNOS 5
+#define N_PIZZAIOLOS 7
+#define N_REPOSITORES 2
+#define N_FORNOS 6
 #define GAS_INICIAL 2 // quantidade máxima de gás
 
 sem_t sem_fornos[N_FORNOS];
@@ -40,9 +40,7 @@ void* f_pizzaiolo(void* v) {
                     forno_disponivel = -1;
                     continue;
                 }
-
                 forno_usado_por[forno_disponivel] = id;
-
                 break;
             }
         }
@@ -56,11 +54,11 @@ void* f_pizzaiolo(void* v) {
                 //printf("O forno %d ficou sem gás.\n", forno_disponivel);
             }
             sem_post(&sem_fornos[forno_disponivel]);
+            forno_usado_por[forno_disponivel] = -1;
         } else {
             //printf("Pizzaiolo %d está aguardando um forno disponível.\n", id);
             sleep(2); // Simula o tempo de espera
         }
-        forno_usado_por[forno_disponivel] = -1;
         forno_disponivel = -1; // Reseta o valor do forno disponível
     }
 
@@ -83,16 +81,12 @@ void* f_repositor(void* v) {
                     sleep(4); // Simula o tempo de reabastecimento
                     gas_fornos[forno_selecionado] = GAS_INICIAL;
                     //printf("Repositor %d terminou de reabastecer o forno %d. Gás restante: %d.\n", id, forno_selecionado, gas_fornos[forno_selecionado]);
-					sem_post(&sem_fornos[forno_selecionado]);
-					forno_selecionado = -1;
-					continue;
 				}
-
-                break;
+                sem_post(&sem_fornos[forno_selecionado]);
             }
         }
 
-        sleep(random()%7); // Simula o tempo de espera
+        sleep(random()%5); // Simula o tempo de espera
     }
 }
 

@@ -16,7 +16,7 @@ periodicamente os fornos para reabastecê-los caso
 necessário.
 */
 
-#define N_PIZZAIOLOS 5
+#define N_PIZZAIOLOS 9
 #define N_REPOSITORES 3
 #define N_FORNOS 5
 #define GAS_INICIAL 2 // quantidade máxima de gás
@@ -116,10 +116,10 @@ void updateFornos() {
 
     char pizzaiolo[6][11] = {
         "     0    \0",
-        "   _/|\   \0",
+        "   _/|\\   \0",
         "     |    \0",
-        "    / \   \0",
-        "   /   \  \0",
+        "    / \\   \0",
+        "   /   \\  \0",
         "__________\0"
     };
 
@@ -136,7 +136,7 @@ void updateFornos() {
         "__________\0",
         "| `*`*`*`|\0",
         "| *____* |\0",
-        "| |/\/\| |\0",
+        "| |/\\/\\| |\0",
         "| |____| |\0",
         "|________|\0"
     };
@@ -151,7 +151,7 @@ void updateFornos() {
                 mvprintw(8+j, 11*i, forno_assando[j]);
                 mvprintw(17+j, 11*i, pizzaiolo[j]);
             }
-            mvprintw(21, 11*i, "pizzai.: %d\0", i);
+            mvprintw(21, 11*i, "pizzai.: %d\0", forno_usado_por[i]);
         }
 
         char str[3];

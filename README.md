@@ -12,5 +12,11 @@ Em uma pizzaria em Barão Geraldo, existe uma pizzaria chamada Pizza504 que come
 (x) Fazer lista de estados assumidos pelo pizzaiolo; \
 ( ) Implementar comunicação entre forno e pizzaiolo para indicar o progresso de cocção da pizza; \
 ( ) Pensar como a movimentação do pizzaiolo vai ser representada; \
-( ) Planejar animação do projeto \
-( ) Implementar animação do projeto
+(x) Planejar animação do projeto \
+(x) Implementar animação do projeto
+
+## Lista de melhorias
+(x) Quando um pizzaiolo terminar de assar sua pizza, tem que voltar pro final da fila (deixar outros assarem tb) -> um sleep foi adicionado  
+(-) Planejar alguma forma de separar o funcionamento dos fornos dos pizzaiolos -> achamos uma mudança desnecessária
+(x) Aumentar o espaço entre os pizzaiolos
+( ) Implementar animação do repositor

@@ -16,10 +16,10 @@ periodicamente os fornos para reabastecê-los caso
 necessário.
 */
 
-#define N_PIZZAIOLOS 7
+#define N_PIZZAIOLOS 20
 #define N_REPOSITORES 2
 #define N_FORNOS 6
-#define GAS_INICIAL 2 // quantidade máxima de gás
+#define GAS_INICIAL 8 // quantidade máxima de gás
 
 sem_t sem_fornos[N_FORNOS];
 int gas_fornos[N_FORNOS];
@@ -53,8 +53,10 @@ void* f_pizzaiolo(void* v) {
             if (gas_fornos[forno_disponivel] == 0) {
                 //printf("O forno %d ficou sem gás.\n", forno_disponivel);
             }
+
             sem_post(&sem_fornos[forno_disponivel]);
             forno_usado_por[forno_disponivel] = -1;
+            sleep(2); // evita que o pizzaiolo use o mesmo forno vezes seguidas
         } else {
             //printf("Pizzaiolo %d está aguardando um forno disponível.\n", id);
             sleep(2); // Simula o tempo de espera
@@ -138,18 +140,18 @@ void updateFornos() {
     for (int i=0; i<N_FORNOS; i++) {
         if (forno_usado_por[i] == -1) {
             for (int j=0; j<6; j++) {
-                mvprintw(8+j, 11*i, forno_parado[j]);
+                mvprintw(8+j, 14*i, forno_parado[j]);
             }
         } else {
             for (int j=0; j<6; j++) {
-                mvprintw(8+j, 11*i, forno_assando[j]);
-                mvprintw(17+j, 11*i, pizzaiolo[j]);
+                mvprintw(8+j, 14*i, forno_assando[j]);
+                mvprintw(17+j, 14*i, pizzaiolo[j]);
             }
-            mvprintw(21, 11*i, "pizzai.: %d\0", forno_usado_por[i]);
+            mvprintw(21, 14*i, "pizzai.: %d\0", forno_usado_por[i]);
         }
 
         char str[3];
-        mvprintw(15, 11*i, "gas: %d\0", gas_fornos[i]);
+        mvprintw(15, 14*i, "gas: %d\0", gas_fornos[i]);
     }
 }
 

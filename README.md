@@ -19,4 +19,7 @@ Em uma pizzaria em Barão Geraldo, existe uma pizzaria chamada Pizza504 que come
 (x) Quando um pizzaiolo terminar de assar sua pizza, tem que voltar pro final da fila (deixar outros assarem tb) -> um sleep foi adicionado  
 (-) Planejar alguma forma de separar o funcionamento dos fornos dos pizzaiolos -> achamos uma mudança desnecessária
 (x) Aumentar o espaço entre os pizzaiolos
-( ) Implementar animação do repositor
+(x) Implementar animação do repositor
+(x) Resolver problema do repositor aparecer abastecendo vários fornos ao mesmo tempo -> foi adicionada uma proteção no vetor que guarda quem está abastecendo cada forno
+( ) Depois que o repositor sai, o gás demora a atualizar em alguns casos
+( ) Resolver problema de a animação inteira travar quando acontece abastecimento (por causa dos semáforos de proteção talvez?)

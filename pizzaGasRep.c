@@ -100,18 +100,41 @@ void* f_repositor(void* v) {
 }
 
 void printLogo() {
-    char logo[6][43] = {
-        "  _____ _              _____  ___  _  _   \0",
-        " |  __ (_)            | ____|/ _ \\| || |  \0",
-        " | |__) _ __________ _| |__ | | | | || |_ \0",
-        " |  ___| |_  |_  / _` |___ \\| | | |__   _|\0",
-        " | |   | |/ / / | (_| |___) | |_| |  | |  \0",
-        " |_|   |_/___/___\\__,_|____/ \\___/   |_|  \0"
+    char logo_pizza[6][24] = {
+        "  _____ _              \0",
+        " |  __ (_)             \0",
+        " | |__) ) __________ _ \0",
+        " |  ___| |_  |_  / _` |\0",
+        " | |   | |/ / / | (_| |\0",
+        " |_|   |_/___/___\\__,_\0"
+    };
+    char logo_504[6][21] = {
+        " _____  ___  _  _   \0",
+        "| ____|/ _ \\| || |  \0",
+        "| |__ | | | | || |_ \0",
+        "|___ \\| | | |__   _|\0",
+        " ___) | |_| |  | |  \0",
+        "|_____/\\___/   |_|  \0"
     };
 
-    for (int i = 0; i < 6; i++) {
-        mvprintw(i, 0, logo[i]);
+    initscr();
+    if (has_colors() == FALSE) {
+        endwin();
+        printf("Seu terminal não suporta cores.\n");
+        return 1;
     }
+    start_color(); // Inicia as cores
+    init_pair(1, COLOR_GREEN, COLOR_BLACK);
+    init_pair(2, COLOR_RED, COLOR_BLACK);
+
+    for (int i = 0; i < 6; i++) {
+        attron(COLOR_PAIR(1));
+        mvprintw(i, 0, logo_pizza[i]);
+        attron(COLOR_PAIR(2));
+        mvprintw(i, 22, logo_504[i]);
+    }
+    // attroff(COLOR_PAIR(1));
+    attroff(COLOR_PAIR(2));
 }
 
 

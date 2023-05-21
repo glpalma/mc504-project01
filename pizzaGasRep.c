@@ -17,7 +17,7 @@ necessário.
 */
 
 #define N_PIZZAIOLOS 20
-#define N_REPOSITORES 2
+#define N_REPOSITORES 1
 #define N_FORNOS 6
 #define GAS_INICIAL 8 // quantidade máxima de gás
 
@@ -117,7 +117,6 @@ void printLogo() {
         "|_____/\\___/   |_|  \0"
     };
 
-    initscr();
     if (has_colors() == FALSE) {
         endwin();
         printf("Seu terminal não suporta cores.\n");
@@ -167,6 +166,9 @@ void updateFornos() {
         "|________|\0"
     };
 
+    char detalhes_forno[5] = "/\\/\\\0";
+    init_pair(3, COLOR_YELLOW, COLOR_BLACK);
+
     for (int i=0; i<N_FORNOS; i++) {
         if (forno_usado_por[i] == -1) {
             for (int j=0; j<6; j++) {
@@ -177,6 +179,9 @@ void updateFornos() {
                 mvprintw(15+j, 14*i, forno_assando[j]);
                 mvprintw(24+j, 14*i, pizzaiolo[j]);
             }
+            attron(COLOR_PAIR(3));
+            mvprintw(18, 14 * i + 3, detalhes_forno);
+            attroff(COLOR_PAIR(3));
             mvprintw(28, 14*i, "pizzai.: %d\0", forno_usado_por[i]);
         }
 

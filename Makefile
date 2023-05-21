@@ -2,9 +2,9 @@ CC = gcc
 CFLAGS = -Wall -Wextra
 LIBS = -lncurses
 
-pizzaGasRep: pizzaGasRep.c
+pizza504: pizza504.c
 	$(CC) $(CFLAGS) $< -o $@ $(LIBS)
 
 .PHONY: clean
 clean:
-	rm -f pizzaGasRep
+	rm -f pizza504

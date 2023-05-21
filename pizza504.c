@@ -5,21 +5,10 @@
 #include <unistd.h>
 #include <ncurses.h>
 
-/*
-Fase 1 do projeto:
-Um grupo de pizzaiolos (de 1 até N pessoas) tem que se
-organizar para utilizar os poucos fornos disponíveis na
-pizzaria em que trabalham. Os fornos possuem quantidade
-de gás variável e se tornam indisponíveis durante o
-reabastecimento. Os repositores verificam
-periodicamente os fornos para reabastecê-los caso
-necessário.
-*/
-
-#define N_PIZZAIOLOS 20
-#define N_REPOSITORES 1
+#define N_PIZZAIOLOS 7
+#define N_REPOSITORES 4
 #define N_FORNOS 6
-#define GAS_INICIAL 8 // quantidade máxima de gás
+#define GAS_INICIAL 4 // quantidade máxima de gás
 
 sem_t sem_fornos[N_FORNOS];
 int gas_fornos[N_FORNOS];
@@ -40,7 +29,7 @@ void* f_pizzaiolo(void* v) {
             if (sem_trywait(&sem_fornos[i]) == 0) {
                 forno_disponivel = i;
                 if (gas_fornos[forno_disponivel] == 0) {
-                    //printf("O forno %d está sem gás.\n", forno_disponivel);
+                    // Forno sem gás
                     sem_post(&sem_fornos[forno_disponivel]);
                     forno_disponivel = -1;
                     continue;
@@ -51,46 +40,34 @@ void* f_pizzaiolo(void* v) {
         }
 
         if (forno_disponivel != -1) {
-            //printf("Pizzaiolo %d está usando o forno %d.\n", id, forno_disponivel);
-            sleep(1 + random()%2); // Simula o tempo de aquecimento da pizza
+            // O forno está sendo utilizado pelo pizzaiolo
+            sleep(1 + random() % 2); // Simula o tempo de aquecimento da pizza
             gas_fornos[forno_disponivel]--;
-            //printf("Pizzaiolo %d terminou de aquecer a pizza no forno %d. Gás restante: %d.\n", id, forno_disponivel, gas_fornos[forno_disponivel]);
-            if (gas_fornos[forno_disponivel] == 0) {
-                //printf("O forno %d ficou sem gás.\n", forno_disponivel);
-            }
-
             sem_post(&sem_fornos[forno_disponivel]);
             forno_usado_por[forno_disponivel] = -1;
-            sleep(2); // evita que o pizzaiolo use o mesmo forno vezes seguidas
-        } else {
-            //printf("Pizzaiolo %d está aguardando um forno disponível.\n", id);
-            sleep(2); // Simula o tempo de espera
         }
+        sleep(2); // Simula o tempo de espera
         forno_disponivel = -1; // Reseta o valor do forno disponível
     }
-
-    return NULL;
 }
 
 void* f_repositor(void* v) {
     int id = *(int*)v;
     int forno_selecionado = -1;
-    while(1) {
-
+    while (1) {
         sem_wait(&sem_escreve_abastecimento);
-        //printf("Repositor %d está verificando se há algum forno Sem gás.\n", id);
+        // O repositor está verificando se tem algum forno sem gás
         for (int i = 0; i < N_FORNOS; i++) {
             forno_abastecido_por[i] = -1;
             if (sem_trywait(&sem_fornos[i]) == 0) {
                 forno_selecionado = i;
-                
-				if (gas_fornos[forno_selecionado] == 0) {
+
+                if (gas_fornos[forno_selecionado] == 0) {
+                    // O repositor está reabastecendo o forno
                     forno_abastecido_por[i] = id;
-					//printf("Repositor %d está reabastecendo o forno %d.\n", id, forno_selecionado);
-                    sleep(3); // Simula o tempo de reabastecimento
                     gas_fornos[forno_selecionado] = GAS_INICIAL;
-                    //printf("Repositor %d terminou de reabastecer o forno %d. Gás restante: %d.\n", id, forno_selecionado, gas_fornos[forno_selecionado]);
-				}
+                    sleep(3); // Simula o tempo de reabastecimento
+                }
                 sem_post(&sem_fornos[forno_selecionado]);
                 forno_abastecido_por[i] = -1;
             }
@@ -136,7 +113,6 @@ void printLogo() {
     attroff(COLOR_PAIR(2));
 }
 
-
 void updateFornos() {
 
     char pizzaiolo[6][11] = {
@@ -169,24 +145,25 @@ void updateFornos() {
     char detalhes_forno[5] = "/\\/\\\0";
     init_pair(3, COLOR_YELLOW, COLOR_BLACK);
 
-    for (int i=0; i<N_FORNOS; i++) {
+    for (int i = 0; i < N_FORNOS; i++) {
         if (forno_usado_por[i] == -1) {
-            for (int j=0; j<6; j++) {
-                mvprintw(15+j, 14*i, forno_parado[j]);
+            for (int j = 0; j < 6; j++) {
+                mvprintw(15 + j, 14 * i, forno_parado[j]);
             }
-        } else {
-            for (int j=0; j<6; j++) {
-                mvprintw(15+j, 14*i, forno_assando[j]);
-                mvprintw(24+j, 14*i, pizzaiolo[j]);
+        }
+        else {
+            for (int j = 0; j < 6; j++) {
+                mvprintw(15 + j, 14 * i, forno_assando[j]);
+                mvprintw(24 + j, 14 * i, pizzaiolo[j]);
             }
             attron(COLOR_PAIR(3));
             mvprintw(18, 14 * i + 3, detalhes_forno);
             attroff(COLOR_PAIR(3));
-            mvprintw(28, 14*i, "pizzai.: %d\0", forno_usado_por[i]);
+            mvprintw(30, 14 * i, "pizzai.: %d\0", forno_usado_por[i]);
         }
 
         char str[3];
-        mvprintw(22, 14*i, "gás: %d\0", gas_fornos[i]);
+        mvprintw(22, 14 * i, "gás: %d\0", gas_fornos[i]);
     }
 }
 
@@ -201,13 +178,13 @@ void updateRepositores() {
     };
 
     sem_wait(&sem_le_abastecimento);
-    for (int i=0; i<N_FORNOS; i++) {
-        if(forno_abastecido_por[i] != -1) {
+    for (int i = 0; i < N_FORNOS; i++) {
+        if (forno_abastecido_por[i] != -1) {
             for (int j = 0; j < 6; j++)
             {
-                mvprintw(8+j, 14*i, repositor[j]);
+                mvprintw(8 + j, 14 * i, repositor[j]);
             }
-            mvprintw(14, 14*i, "reposit.: %d\0", forno_abastecido_por[i]);
+            mvprintw(14, 14 * i, "reposit.: %d\0", forno_abastecido_por[i]);
         }
     }
     sem_post(&sem_escreve_abastecimento);
@@ -216,7 +193,7 @@ void updateRepositores() {
 void* f_animate(void* v) {
     initscr();
 
-    while(1) {
+    while (1) {
         usleep(750000);
         clear();
         printLogo();
@@ -233,8 +210,8 @@ int main() {
 
     int i, id_pizzaiolo[N_PIZZAIOLOS], id_repositor[N_REPOSITORES];
 
-    sem_init(&sem_le_abastecimento, 0, 1);
-    sem_init(&sem_escreve_abastecimento, 0, 1);
+    sem_init(&sem_le_abastecimento, 0, N_REPOSITORES);
+    sem_init(&sem_escreve_abastecimento, 0, N_REPOSITORES);
 
     for (i = 0; i < N_FORNOS; i++) {
         forno_usado_por[i] = -1; // Inicializa os fornos como disponíveis
